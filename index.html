@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Speedreader</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="app">
+        <!-- Settings Button -->
+        <button id="settingsBtn" class="settings-btn">⚙️</button>
+
+        <!-- Settings Panel -->
+        <div id="settingsPanel" class="settings-panel">
+            <h3>Einstellungen</h3>
+
+            <div class="setting-group">
+                <label>Geschwindigkeit (WPM):</label>
+                <input type="range" id="speedSlider" min="50" max="1500" value="300">
+                <span id="speedValue">300</span>
+            </div>
+
+            <div class="setting-group">
+                <label>Punkt-Geschwindigkeit:</label>
+                <input type="range" id="pointSpeedSlider" min="0.01" max="3" step="0.01" value="0.3">
+                <span id="pointSpeedValue">0.30</span>x
+            </div>
+
+            <div class="setting-group">
+                <label>Lesemuster:</label>
+                <select id="patternSelect">
+                    <option value="linear">Linear</option>
+                    <option value="scurve">S-Kurven (Professional)</option>
+                    <option value="serpentine">Serpentinen/Wellen</option>
+                    <option value="horizontalscan">Horizontaler Scan</option>
+                    <option value="diagonalzigzag">Diagonaler Zickzack</option>
+                    <option value="multicolumn">Mehrspaltig</option>
+                    <option value="zigzag">Zickzack</option>
+                    <option value="spiral">Spiral</option>
+                    <option value="chunking">Chunking (Wort-Gruppen)</option>
+                    <option value="metaguiding">Meta-Guiding</option>
+                    <option value="fixationreduction">Fixation Reduction</option>
+                    <option value="peripheral">Peripheral Vision Training</option>
+                    <option value="schulte">Schulte-Tabellen Pattern</option>
+                </select>
+            </div>
+
+            <div class="setting-group">
+                <label>Zyklen pro Seite:</label>
+                <input type="range" id="cyclesSlider" min="1" max="10" value="3">
+                <span id="cyclesValue">3</span>
+            </div>
+
+            <div class="setting-group">
+                <label>Punkt-Größe:</label>
+                <input type="range" id="pointSizeSlider" min="5" max="30" value="15">
+                <span id="pointSizeValue">15</span>px
+            </div>
+
+            <div class="setting-group">
+                <label>Punkt-Farbe:</label>
+                <input type="color" id="pointColorPicker" value="#ff0000">
+            </div>
+
+            <div class="setting-group">
+                <label>Fixation-Abstand (Wörter):</label>
+                <input type="range" id="fixationDistanceSlider" min="1" max="8" value="3">
+                <span id="fixationDistanceValue">3</span>
+            </div>
+
+            <div class="setting-group">
+                <label>Chunk-Größe:</label>
+                <input type="range" id="chunkSizeSlider" min="2" max="7" value="4">
+                <span id="chunkSizeValue">4</span> Wörter
+            </div>
+
+            <div class="setting-group">
+                <label>Start-Position (%):</label>
+                <input type="range" id="startPositionSlider" min="0" max="80" value="0">
+                <span id="startPositionValue">0</span>%
+            </div>
+
+            <div class="setting-group">
+                <label>End-Position (%):</label>
+                <input type="range" id="endPositionSlider" min="20" max="100" value="100">
+                <span id="endPositionValue">100</span>%
+            </div>
+
+            <div class="setting-group">
+                <label>Übungsbereich:</label>
+                <div class="progress-bar">
+                    <div id="progressIndicator" class="progress-fill"></div>
+                </div>
+                <small>Graduell erweitern für stetigen Fortschritt</small>
+            </div>
+
+            <div class="setting-group">
+                <label>Augen-Training:</label>
+                <button id="eyeTrainingBtn" class="training-btn">Starten</button>
+            </div>
+
+            <div class="setting-group">
+                <label>Schulte-Tabelle:</label>
+                <button id="schulteBtn" class="training-btn">Üben</button>
+            </div>
+
+            <div class="setting-controls">
+                <button id="startBtn">Start</button>
+                <button id="pauseBtn">Pause</button>
+                <button id="resetBtn">Reset</button>
+            </div>
+        </div>
+
+        <!-- PDF Upload Area -->
+        <div id="uploadArea" class="upload-area">
+            <input type="file" id="pdfInput" accept=".pdf" style="display: none;">
+            <div id="uploadPrompt" class="upload-prompt">
+                <p>PDF hier ablegen oder klicken zum Auswählen</p>
+            </div>
+        </div>
+
+        <!-- PDF Viewer -->
+        <div id="pdfViewer" class="pdf-viewer">
+            <canvas id="pdfCanvas"></canvas>
+            <div id="guidingPoint" class="guiding-point"></div>
+            <div id="chunkHighlight" class="chunk-highlight"></div>
+            <div id="fixationPoints" class="fixation-points"></div>
+        </div>
+
+        <!-- Eye Training Module -->
+        <div id="eyeTrainingModal" class="training-modal">
+            <div class="modal-content">
+                <h3>Augen-Training</h3>
+                <div id="eyeTrainingArea" class="training-area">
+                    <div class="training-instruction">Folgen Sie dem Punkt mit Ihren Augen</div>
+                    <div id="eyeTrainingPoint" class="training-point"></div>
+                </div>
+                <button id="closeEyeTraining" class="close-btn">Schließen</button>
+            </div>
+        </div>
+
+        <!-- Schulte Table Module -->
+        <div id="schulteModal" class="training-modal">
+            <div class="modal-content">
+                <h3>Schulte-Tabelle Training</h3>
+                <div class="schulte-info">
+                    <span>Zeit: <span id="schulteTimer">0</span>s</span>
+                    <span>Nächste Zahl: <span id="nextNumber">1</span></span>
+                </div>
+                <div id="schulteTable" class="schulte-table"></div>
+                <div class="schulte-controls">
+                    <button id="startSchulte">Start</button>
+                    <button id="resetSchulte">Reset</button>
+                    <button id="closeSchulte" class="close-btn">Schließen</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Page Navigation -->
+        <div id="pageNavigation" class="page-navigation">
+            <button id="prevPageBtn" class="nav-btn">◀</button>
+            <span id="pageInfo" class="page-info">
+                Seite <span id="currentPage">1</span> von <span id="totalPages">1</span>
+            </span>
+            <button id="nextPageBtn" class="nav-btn">▶</button>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

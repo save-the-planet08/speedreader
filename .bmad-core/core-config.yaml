@@ -1,0 +1,28 @@
+markdownExploder: true
+qa:
+  qaLocation: docs/qa
+prd:
+  prdFile: docs/prd.md
+  prdVersion: v4
+  prdSharded: true
+  prdShardedLocation: docs/prd
+  epicFilePattern: epic-{n}*.md
+architecture:
+  architectureFile: docs/architecture.md
+  architectureVersion: v4
+  architectureSharded: true
+  architectureShardedLocation: docs/architecture
+customTechnicalDocuments: null
+devLoadAlwaysFiles:
+  - PRPs/INITIAL.md
+  - CLAUDE.MD
+  - frontend/CLAUDE.MD
+  - backend/agents/CLAUDE.MD
+  - backend/supabase/CLAUDE.MD
+  - frontend/src/lib/supabase.js
+  - frontend/package.json
+devInitCommands:
+  - "tree -I 'node_modules|.git|*.log' -L 3"
+devDebugLog: .ai/debug-log.md
+devStoryLocation: docs/stories
+slashPrefix: BMad
