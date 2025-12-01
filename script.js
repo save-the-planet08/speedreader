@@ -290,6 +290,24 @@ class SpeedReader {
             case 'linear':
                 this.generateLinearPath(startX, startY, endX, endY);
                 break;
+            case 'bookpattern1':
+                this.generateBookPattern1(startX, startY, endX, endY);
+                break;
+            case 'bookpattern2':
+                this.generateBookPattern2(startX, startY, endX, endY);
+                break;
+            case 'bookpattern3':
+                this.generateBookPattern3(startX, startY, endX, endY);
+                break;
+            case 'bookpattern4':
+                this.generateBookPattern4(startX, startY, endX, endY);
+                break;
+            case 'bookpattern5':
+                this.generateBookPattern5(startX, startY, endX, endY);
+                break;
+            case 'bookpattern6':
+                this.generateBookPattern6(startX, startY, endX, endY);
+                break;
             case 'scurve':
                 this.generateSCurvePath(startX, startY, endX, endY);
                 break;
@@ -331,7 +349,7 @@ class SpeedReader {
 
     generateLinearPath(startX, startY, endX, endY) {
         const lineHeight = 30;
-        const pointsPerLine = 15;
+        const pointsPerLine = 100; // Extrem viele Punkte für ultra-glatte Bewegung
 
         for (let y = startY; y <= endY; y += lineHeight) {
             for (let i = 0; i <= pointsPerLine; i++) {
@@ -443,8 +461,8 @@ class SpeedReader {
 
         this.currentPointIndex++;
 
-        // Calculate delay based on WPM and point speed multiplier (much slower)
-        let delay = (60000 / this.settings.speed / 2) / this.settings.pointSpeed;
+        // Calculate delay based on WPM and point speed multiplier (faster for smooth movement)
+        let delay = (60000 / this.settings.speed / 8) / this.settings.pointSpeed;
 
         // Pattern-specific delay adjustments
         if (point.duration) {
@@ -975,6 +993,157 @@ class SpeedReader {
                     });
                 }
             }
+        }
+    }
+
+    // === EXAKTE MUSTER AUS DEM BUCH ===
+
+    // Pattern 1: Horizontale S-Kurven (links oben im Buch)
+    generateBookPattern1(startX, startY, endX, endY) {
+        const lineSpacing = 35;
+        const pointsPerLine = 80;
+
+        for (let y = startY; y <= endY; y += lineSpacing) {
+            for (let i = 0; i <= pointsPerLine; i++) {
+                const progress = i / pointsPerLine;
+                const x = startX + (endX - startX) * progress;
+
+                // Exakte horizontale S-Kurve wie im Buch
+                const sCurve = Math.sin(progress * Math.PI * 4) * 25;
+
+                this.pathPoints.push({
+                    x: x,
+                    y: y + sCurve,
+                    isBookPattern: true,
+                    pattern: 1
+                });
+            }
+        }
+    }
+
+    // Pattern 2: Vertikale Schlangenwelle (links unten im Buch)
+    generateBookPattern2(startX, startY, endX, endY) {
+        const totalPoints = 400;
+        const height = endY - startY;
+        const width = endX - startX;
+
+        for (let i = 0; i <= totalPoints; i++) {
+            const verticalProgress = i / totalPoints;
+            const y = startY + height * verticalProgress;
+
+            // Vertikale Schlangenbewegung wie im Buch
+            const waveX = Math.sin(verticalProgress * Math.PI * 8) * (width * 0.4);
+            const x = startX + width * 0.5 + waveX;
+
+            this.pathPoints.push({
+                x: x,
+                y: y,
+                isBookPattern: true,
+                pattern: 2
+            });
+        }
+    }
+
+    // Pattern 3: Spalten-Lesen (mitte im Buch)
+    generateBookPattern3(startX, startY, endX, endY) {
+        const columns = 1;
+        const lineHeight = 30;
+        const pointsPerLine = 3; // Nur 3 Fixationspunkte pro Zeile
+
+        for (let y = startY; y <= endY; y += lineHeight) {
+            // Links, Mitte, Rechts - klassisches 3-Punkt-Lesen
+            const leftX = startX + (endX - startX) * 0.25;
+            const centerX = startX + (endX - startX) * 0.5;
+            const rightX = startX + (endX - startX) * 0.75;
+
+            this.pathPoints.push(
+                { x: leftX, y, isBookPattern: true, pattern: 3 },
+                { x: centerX, y, isBookPattern: true, pattern: 3 },
+                { x: rightX, y, isBookPattern: true, pattern: 3 }
+            );
+        }
+    }
+
+    // Pattern 4: Figure-8 Schleifen (rechts oben im Buch)
+    generateBookPattern4(startX, startY, endX, endY) {
+        const loopHeight = 60;
+        const loopsPerPage = Math.floor((endY - startY) / loopHeight);
+        const pointsPerLoop = 50;
+
+        for (let loop = 0; loop < loopsPerPage; loop++) {
+            const loopCenterY = startY + (loop + 0.5) * loopHeight;
+            const loopCenterX = startX + (endX - startX) * 0.5;
+
+            for (let i = 0; i <= pointsPerLoop; i++) {
+                const t = (i / pointsPerLoop) * Math.PI * 4; // Zwei komplette Kreise für Figure-8
+
+                // Figure-8 Formel (Lemniskate)
+                const scale = (endX - startX) * 0.3;
+                const x = loopCenterX + scale * Math.cos(t) / (1 + Math.sin(t) * Math.sin(t));
+                const y = loopCenterY + (loopHeight * 0.3) * Math.sin(t) * Math.cos(t) / (1 + Math.sin(t) * Math.sin(t));
+
+                this.pathPoints.push({
+                    x: x,
+                    y: y,
+                    isBookPattern: true,
+                    pattern: 4
+                });
+            }
+        }
+    }
+
+    // Pattern 5: Horizontale Scan-Linien (rechts unten im Buch)
+    generateBookPattern5(startX, startY, endX, endY) {
+        const scanLines = 12;
+        const scanSpacing = (endY - startY) / scanLines;
+        const pointsPerScan = 60;
+
+        for (let scan = 0; scan <= scanLines; scan++) {
+            const y = startY + scan * scanSpacing;
+
+            // Abwechselnde Richtung wie im Buch
+            const isReverse = scan % 2 === 1;
+
+            for (let i = 0; i <= pointsPerScan; i++) {
+                const progress = isReverse ? 1 - (i / pointsPerScan) : (i / pointsPerScan);
+                const x = startX + (endX - startX) * progress;
+
+                this.pathPoints.push({
+                    x: x,
+                    y: y,
+                    isBookPattern: true,
+                    pattern: 5,
+                    scanDirection: isReverse ? 'reverse' : 'forward'
+                });
+            }
+        }
+    }
+
+    // Pattern 6: Diagonale Zickzack-Wellen (rechts mitte im Buch)
+    generateBookPattern6(startX, startY, endX, endY) {
+        const totalPoints = 300;
+        const width = endX - startX;
+        const height = endY - startY;
+
+        for (let i = 0; i <= totalPoints; i++) {
+            const progress = i / totalPoints;
+
+            // Diagonale Grundbewegung
+            const baseX = startX + width * progress;
+            const baseY = startY + height * progress;
+
+            // Zickzack-Wellen überlagert
+            const waveAmplitude = 40;
+            const waveFreq = 15;
+            const zigzagX = Math.sin(progress * Math.PI * waveFreq) * waveAmplitude;
+            const zigzagY = Math.cos(progress * Math.PI * waveFreq * 0.7) * (waveAmplitude * 0.5);
+
+            this.pathPoints.push({
+                x: baseX + zigzagX,
+                y: baseY + zigzagY,
+                isBookPattern: true,
+                pattern: 6
+            });
         }
     }
 }
