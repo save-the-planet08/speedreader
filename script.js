@@ -772,8 +772,19 @@ class SpeedReader {
         const controlMenu = document.getElementById('controlMenu');
         const controlIcon = document.getElementById('controlIcon');
 
+        console.log('Setting up universal control:', { controlCenter, controlMenu, controlIcon });
+
+        if (!controlCenter || !controlMenu || !controlIcon) {
+            console.error('Universal control elements not found!');
+            return;
+        }
+
         // Toggle menu on click
-        controlCenter.addEventListener('click', () => {
+        controlCenter.addEventListener('click', (e) => {
+            console.log('Control center clicked!');
+            e.preventDefault();
+            e.stopPropagation();
+
             const isOpen = controlMenu.classList.contains('show');
             if (isOpen) {
                 controlMenu.classList.remove('show');
@@ -793,25 +804,44 @@ class SpeedReader {
         });
 
         // Control buttons
-        document.getElementById('universalPlayBtn').addEventListener('click', (e) => {
-            e.stopPropagation();
-            this.start();
-        });
+        const playBtn = document.getElementById('universalPlayBtn');
+        const pauseBtn = document.getElementById('universalPauseBtn');
+        const prevBtn = document.getElementById('universalPrevBtn');
+        const nextBtn = document.getElementById('universalNextBtn');
 
-        document.getElementById('universalPauseBtn').addEventListener('click', (e) => {
-            e.stopPropagation();
-            this.pause();
-        });
+        console.log('Control buttons:', { playBtn, pauseBtn, prevBtn, nextBtn });
 
-        document.getElementById('universalPrevBtn').addEventListener('click', (e) => {
-            e.stopPropagation();
-            this.previousPage();
-        });
+        if (playBtn) {
+            playBtn.addEventListener('click', (e) => {
+                console.log('Play button clicked!');
+                e.stopPropagation();
+                this.start();
+            });
+        }
 
-        document.getElementById('universalNextBtn').addEventListener('click', (e) => {
-            e.stopPropagation();
-            this.nextPage();
-        });
+        if (pauseBtn) {
+            pauseBtn.addEventListener('click', (e) => {
+                console.log('Pause button clicked!');
+                e.stopPropagation();
+                this.pause();
+            });
+        }
+
+        if (prevBtn) {
+            prevBtn.addEventListener('click', (e) => {
+                console.log('Previous button clicked!');
+                e.stopPropagation();
+                this.previousPage();
+            });
+        }
+
+        if (nextBtn) {
+            nextBtn.addEventListener('click', (e) => {
+                console.log('Next button clicked!');
+                e.stopPropagation();
+                this.nextPage();
+            });
+        }
 
         document.getElementById('universalSettingsBtn').addEventListener('click', (e) => {
             e.stopPropagation();
