@@ -79,8 +79,8 @@ class SpeedReader {
         document.getElementById('eyeTrainingBtn').addEventListener('click', () => this.eyeTraining.show());
         document.getElementById('schulteBtn').addEventListener('click', () => this.schulteTraining.show());
 
-        // Universal control
-        this.setupUniversalControl();
+        // Simple controls
+        this.setupSimpleControls();
     }
 
     initializeSettingsControls() {
@@ -246,7 +246,7 @@ class SpeedReader {
             document.getElementById('pageNavigation').classList.add('visible');
 
             this.updatePageInfo();
-            this.updateUniversalControlPageDisplay();
+            this.updateSimpleControlPageDisplay();
             this.updateProgressIndicator();
             this.generatePath();
         } catch (error) {
@@ -436,8 +436,11 @@ class SpeedReader {
         // Update button states
         document.getElementById('startBtn').classList.add('active');
         document.getElementById('pauseBtn').classList.remove('active');
-        document.getElementById('universalPlayBtn').classList.add('active');
-        document.getElementById('universalPauseBtn').classList.remove('active');
+        const playPauseBtn = document.getElementById('playPauseBtn');
+        if (playPauseBtn) {
+            playPauseBtn.textContent = '⏸';
+            playPauseBtn.classList.add('active');
+        }
     }
 
     pause() {
@@ -449,8 +452,11 @@ class SpeedReader {
         // Update button states
         document.getElementById('startBtn').classList.remove('active');
         document.getElementById('pauseBtn').classList.add('active');
-        document.getElementById('universalPlayBtn').classList.remove('active');
-        document.getElementById('universalPauseBtn').classList.add('active');
+        const playPauseBtn = document.getElementById('playPauseBtn');
+        if (playPauseBtn) {
+            playPauseBtn.textContent = '▶';
+            playPauseBtn.classList.remove('active');
+        }
     }
 
     reset() {
@@ -461,8 +467,11 @@ class SpeedReader {
         // Update button states
         document.getElementById('startBtn').classList.remove('active');
         document.getElementById('pauseBtn').classList.remove('active');
-        document.getElementById('universalPlayBtn').classList.remove('active');
-        document.getElementById('universalPauseBtn').classList.remove('active');
+        const playPauseBtn = document.getElementById('playPauseBtn');
+        if (playPauseBtn) {
+            playPauseBtn.textContent = '▶';
+            playPauseBtn.classList.remove('active');
+        }
     }
 
     animate() {
@@ -752,7 +761,7 @@ class SpeedReader {
         this.currentPage--;
         await this.renderPage(this.currentPage);
         this.updatePageInfo();
-        this.updateUniversalControlPageDisplay();
+        this.updateSimpleControlPageDisplay();
         this.generatePath();
     }
 
@@ -763,98 +772,49 @@ class SpeedReader {
         this.currentPage++;
         await this.renderPage(this.currentPage);
         this.updatePageInfo();
-        this.updateUniversalControlPageDisplay();
+        this.updateSimpleControlPageDisplay();
         this.generatePath();
     }
 
-    setupUniversalControl() {
-        const controlCenter = document.getElementById('controlCenter');
-        const controlMenu = document.getElementById('controlMenu');
-        const controlIcon = document.getElementById('controlIcon');
+    setupSimpleControls() {
+        const playPauseBtn = document.getElementById('playPauseBtn');
+        const prevPageBtn = document.getElementById('prevPageBtn');
+        const nextPageBtn = document.getElementById('nextPageBtn');
 
-        console.log('Setting up universal control:', { controlCenter, controlMenu, controlIcon });
-
-        if (!controlCenter || !controlMenu || !controlIcon) {
-            console.error('Universal control elements not found!');
-            return;
-        }
-
-        // Toggle menu on click
-        controlCenter.addEventListener('click', (e) => {
-            console.log('Control center clicked!');
-            e.preventDefault();
-            e.stopPropagation();
-
-            const isOpen = controlMenu.classList.contains('show');
-            if (isOpen) {
-                controlMenu.classList.remove('show');
-                controlIcon.textContent = '⚡';
-            } else {
-                controlMenu.classList.add('show');
-                controlIcon.textContent = '✕';
-            }
-        });
-
-        // Close menu when clicking outside
-        document.addEventListener('click', (e) => {
-            if (!document.getElementById('universalControl').contains(e.target)) {
-                controlMenu.classList.remove('show');
-                controlIcon.textContent = '⚡';
-            }
-        });
-
-        // Control buttons
-        const playBtn = document.getElementById('universalPlayBtn');
-        const pauseBtn = document.getElementById('universalPauseBtn');
-        const prevBtn = document.getElementById('universalPrevBtn');
-        const nextBtn = document.getElementById('universalNextBtn');
-
-        console.log('Control buttons:', { playBtn, pauseBtn, prevBtn, nextBtn });
-
-        if (playBtn) {
-            playBtn.addEventListener('click', (e) => {
-                console.log('Play button clicked!');
-                e.stopPropagation();
-                this.start();
+        // Play/Pause toggle button
+        if (playPauseBtn) {
+            playPauseBtn.addEventListener('click', () => {
+                if (this.isPlaying) {
+                    this.pause();
+                    playPauseBtn.textContent = '▶';
+                    playPauseBtn.classList.remove('active');
+                } else {
+                    this.start();
+                    playPauseBtn.textContent = '⏸';
+                    playPauseBtn.classList.add('active');
+                }
             });
         }
 
-        if (pauseBtn) {
-            pauseBtn.addEventListener('click', (e) => {
-                console.log('Pause button clicked!');
-                e.stopPropagation();
-                this.pause();
-            });
-        }
-
-        if (prevBtn) {
-            prevBtn.addEventListener('click', (e) => {
-                console.log('Previous button clicked!');
-                e.stopPropagation();
+        // Previous page button
+        if (prevPageBtn) {
+            prevPageBtn.addEventListener('click', () => {
                 this.previousPage();
             });
         }
 
-        if (nextBtn) {
-            nextBtn.addEventListener('click', (e) => {
-                console.log('Next button clicked!');
-                e.stopPropagation();
+        // Next page button
+        if (nextPageBtn) {
+            nextPageBtn.addEventListener('click', () => {
                 this.nextPage();
             });
         }
-
-        document.getElementById('universalSettingsBtn').addEventListener('click', (e) => {
-            e.stopPropagation();
-            document.getElementById('settingsPanel').classList.toggle('open');
-            controlMenu.classList.remove('show');
-            controlIcon.textContent = '⚡';
-        });
     }
 
-    updateUniversalControlPageDisplay() {
-        const pageDisplay = document.getElementById('pageDisplay');
-        if (pageDisplay && this.pdfDoc) {
-            pageDisplay.textContent = `${this.currentPage}/${this.pdfDoc.numPages}`;
+    updateSimpleControlPageDisplay() {
+        const pageInfo = document.getElementById('pageInfo');
+        if (pageInfo && this.pdfDoc) {
+            pageInfo.textContent = `${this.currentPage}/${this.pdfDoc.numPages}`;
         }
     }
 
