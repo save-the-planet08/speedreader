@@ -436,8 +436,8 @@ class SpeedReader {
         // Update button states
         document.getElementById('startBtn').classList.add('active');
         document.getElementById('pauseBtn').classList.remove('active');
-        document.getElementById('playBtn').classList.add('active');
-        document.getElementById('pauseBtn').classList.remove('active');
+        document.getElementById('universalPlayBtn').classList.add('active');
+        document.getElementById('universalPauseBtn').classList.remove('active');
     }
 
     pause() {
@@ -449,8 +449,8 @@ class SpeedReader {
         // Update button states
         document.getElementById('startBtn').classList.remove('active');
         document.getElementById('pauseBtn').classList.add('active');
-        document.getElementById('playBtn').classList.remove('active');
-        document.getElementById('pauseBtn').classList.add('active');
+        document.getElementById('universalPlayBtn').classList.remove('active');
+        document.getElementById('universalPauseBtn').classList.add('active');
     }
 
     reset() {
@@ -461,8 +461,8 @@ class SpeedReader {
         // Update button states
         document.getElementById('startBtn').classList.remove('active');
         document.getElementById('pauseBtn').classList.remove('active');
-        document.getElementById('playBtn').classList.remove('active');
-        document.getElementById('pauseBtn').classList.remove('active');
+        document.getElementById('universalPlayBtn').classList.remove('active');
+        document.getElementById('universalPauseBtn').classList.remove('active');
     }
 
     animate() {
@@ -793,27 +793,27 @@ class SpeedReader {
         });
 
         // Control buttons
-        document.getElementById('playBtn').addEventListener('click', (e) => {
+        document.getElementById('universalPlayBtn').addEventListener('click', (e) => {
             e.stopPropagation();
             this.start();
         });
 
-        document.getElementById('pauseBtn').addEventListener('click', (e) => {
+        document.getElementById('universalPauseBtn').addEventListener('click', (e) => {
             e.stopPropagation();
             this.pause();
         });
 
-        document.getElementById('prevBtn').addEventListener('click', (e) => {
+        document.getElementById('universalPrevBtn').addEventListener('click', (e) => {
             e.stopPropagation();
             this.previousPage();
         });
 
-        document.getElementById('nextBtn').addEventListener('click', (e) => {
+        document.getElementById('universalNextBtn').addEventListener('click', (e) => {
             e.stopPropagation();
             this.nextPage();
         });
 
-        document.getElementById('settingsBtn').addEventListener('click', (e) => {
+        document.getElementById('universalSettingsBtn').addEventListener('click', (e) => {
             e.stopPropagation();
             document.getElementById('settingsPanel').classList.toggle('open');
             controlMenu.classList.remove('show');
