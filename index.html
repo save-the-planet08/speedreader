@@ -139,10 +139,19 @@
             <div id="chunkHighlight" class="chunk-highlight"></div>
             <div id="fixationPoints" class="fixation-points"></div>
 
-            <!-- Floating Controls -->
-            <div id="floatingControls" class="floating-controls">
-                <button id="floatingStartBtn" class="floating-btn start-btn">▶</button>
-                <button id="floatingPauseBtn" class="floating-btn pause-btn">⏸</button>
+            <!-- Universal Minimal Control -->
+            <div id="universalControl" class="universal-control">
+                <div class="control-center" id="controlCenter">
+                    <div class="control-icon" id="controlIcon">⚡</div>
+                </div>
+                <div class="control-menu" id="controlMenu">
+                    <button class="control-btn play-btn" id="playBtn">▶</button>
+                    <button class="control-btn pause-btn" id="pauseBtn">⏸</button>
+                    <button class="control-btn prev-btn" id="prevBtn">◀</button>
+                    <span class="page-display" id="pageDisplay">1/1</span>
+                    <button class="control-btn next-btn" id="nextBtn">▶</button>
+                    <button class="control-btn settings-btn" id="settingsBtn">⚙</button>
+                </div>
             </div>
         </div>
 
@@ -173,15 +182,6 @@
                     <button id="closeSchulte" class="close-btn">Schließen</button>
                 </div>
             </div>
-        </div>
-
-        <!-- Page Navigation -->
-        <div id="pageNavigation" class="page-navigation">
-            <button id="prevPageBtn" class="nav-btn">◀</button>
-            <span id="pageInfo" class="page-info">
-                Seite <span id="currentPage">1</span> von <span id="totalPages">1</span>
-            </span>
-            <button id="nextPageBtn" class="nav-btn">▶</button>
         </div>
     </div>
 

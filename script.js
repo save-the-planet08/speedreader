@@ -79,9 +79,8 @@ class SpeedReader {
         document.getElementById('eyeTrainingBtn').addEventListener('click', () => this.eyeTraining.show());
         document.getElementById('schulteBtn').addEventListener('click', () => this.schulteTraining.show());
 
-        // Floating controls
-        document.getElementById('floatingStartBtn').addEventListener('click', () => this.start());
-        document.getElementById('floatingPauseBtn').addEventListener('click', () => this.pause());
+        // Universal control
+        this.setupUniversalControl();
     }
 
     initializeSettingsControls() {
@@ -247,6 +246,7 @@ class SpeedReader {
             document.getElementById('pageNavigation').classList.add('visible');
 
             this.updatePageInfo();
+            this.updateUniversalControlPageDisplay();
             this.updateProgressIndicator();
             this.generatePath();
         } catch (error) {
@@ -436,8 +436,8 @@ class SpeedReader {
         // Update button states
         document.getElementById('startBtn').classList.add('active');
         document.getElementById('pauseBtn').classList.remove('active');
-        document.getElementById('floatingStartBtn').classList.add('active');
-        document.getElementById('floatingPauseBtn').classList.remove('active');
+        document.getElementById('playBtn').classList.add('active');
+        document.getElementById('pauseBtn').classList.remove('active');
     }
 
     pause() {
@@ -449,8 +449,8 @@ class SpeedReader {
         // Update button states
         document.getElementById('startBtn').classList.remove('active');
         document.getElementById('pauseBtn').classList.add('active');
-        document.getElementById('floatingStartBtn').classList.remove('active');
-        document.getElementById('floatingPauseBtn').classList.add('active');
+        document.getElementById('playBtn').classList.remove('active');
+        document.getElementById('pauseBtn').classList.add('active');
     }
 
     reset() {
@@ -461,8 +461,8 @@ class SpeedReader {
         // Update button states
         document.getElementById('startBtn').classList.remove('active');
         document.getElementById('pauseBtn').classList.remove('active');
-        document.getElementById('floatingStartBtn').classList.remove('active');
-        document.getElementById('floatingPauseBtn').classList.remove('active');
+        document.getElementById('playBtn').classList.remove('active');
+        document.getElementById('pauseBtn').classList.remove('active');
     }
 
     animate() {
@@ -752,6 +752,7 @@ class SpeedReader {
         this.currentPage--;
         await this.renderPage(this.currentPage);
         this.updatePageInfo();
+        this.updateUniversalControlPageDisplay();
         this.generatePath();
     }
 
@@ -762,7 +763,69 @@ class SpeedReader {
         this.currentPage++;
         await this.renderPage(this.currentPage);
         this.updatePageInfo();
+        this.updateUniversalControlPageDisplay();
         this.generatePath();
+    }
+
+    setupUniversalControl() {
+        const controlCenter = document.getElementById('controlCenter');
+        const controlMenu = document.getElementById('controlMenu');
+        const controlIcon = document.getElementById('controlIcon');
+
+        // Toggle menu on click
+        controlCenter.addEventListener('click', () => {
+            const isOpen = controlMenu.classList.contains('show');
+            if (isOpen) {
+                controlMenu.classList.remove('show');
+                controlIcon.textContent = '⚡';
+            } else {
+                controlMenu.classList.add('show');
+                controlIcon.textContent = '✕';
+            }
+        });
+
+        // Close menu when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!document.getElementById('universalControl').contains(e.target)) {
+                controlMenu.classList.remove('show');
+                controlIcon.textContent = '⚡';
+            }
+        });
+
+        // Control buttons
+        document.getElementById('playBtn').addEventListener('click', (e) => {
+            e.stopPropagation();
+            this.start();
+        });
+
+        document.getElementById('pauseBtn').addEventListener('click', (e) => {
+            e.stopPropagation();
+            this.pause();
+        });
+
+        document.getElementById('prevBtn').addEventListener('click', (e) => {
+            e.stopPropagation();
+            this.previousPage();
+        });
+
+        document.getElementById('nextBtn').addEventListener('click', (e) => {
+            e.stopPropagation();
+            this.nextPage();
+        });
+
+        document.getElementById('settingsBtn').addEventListener('click', (e) => {
+            e.stopPropagation();
+            document.getElementById('settingsPanel').classList.toggle('open');
+            controlMenu.classList.remove('show');
+            controlIcon.textContent = '⚡';
+        });
+    }
+
+    updateUniversalControlPageDisplay() {
+        const pageDisplay = document.getElementById('pageDisplay');
+        if (pageDisplay && this.pdfDoc) {
+            pageDisplay.textContent = `${this.currentPage}/${this.pdfDoc.numPages}`;
+        }
     }
 
     updateProgressIndicator() {
@@ -1041,9 +1104,9 @@ class SpeedReader {
             const verticalProgress = i / totalPoints;
             const y = startY + height * verticalProgress;
 
-            // Vertikale Schlangenbewegung wie im Buch - Amplitude streckbar
-            const waveX = Math.sin(verticalProgress * Math.PI * 8) * (width * 0.4 * this.settings.patternStretch);
-            const x = startX + width * 0.5 + waveX;
+            // Vertikale Schlangenbewegung wie im Buch - beginnt bei startX
+            const waveX = Math.sin(verticalProgress * Math.PI * 8) * (width * 0.3 * this.settings.patternStretch);
+            const x = startX + (width * 0.3) + waveX;
 
             this.pathPoints.push({
                 x: x,

@@ -260,53 +260,111 @@ body {
     text-align: center;
 }
 
-/* Floating Controls */
-.floating-controls {
+/* Universal Minimal Control */
+.universal-control {
     position: fixed;
     bottom: 30px;
     right: 30px;
-    display: flex;
-    gap: 15px;
     z-index: 1000;
 }
 
-.floating-btn {
+.control-center {
     width: 60px;
     height: 60px;
     border-radius: 50%;
-    border: none;
-    font-size: 24px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
     cursor: pointer;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
     transition: all 0.3s ease;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(255, 255, 255, 0.1);
 }
 
-.floating-btn.start-btn {
-    background: #4CAF50;
+.control-center:hover {
+    transform: scale(1.1);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+}
+
+.control-icon {
+    font-size: 24px;
+    color: white;
+    transition: all 0.3s ease;
+}
+
+.control-menu {
+    position: absolute;
+    bottom: 70px;
+    right: 0;
+    background: rgba(17, 17, 17, 0.95);
+    backdrop-filter: blur(20px);
+    border-radius: 25px;
+    padding: 15px;
+    transform: scale(0) translateY(20px);
+    opacity: 0;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 250px;
+}
+
+.control-menu.show {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+}
+
+.control-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.2s ease;
     color: white;
 }
 
-.floating-btn.start-btn:hover {
-    background: #45a049;
+.play-btn {
+    background: linear-gradient(135deg, #4CAF50, #45a049);
+}
+
+.pause-btn {
+    background: linear-gradient(135deg, #ff6b6b, #ff5252);
+}
+
+.prev-btn, .next-btn {
+    background: linear-gradient(135deg, #42a5f5, #1e88e5);
+}
+
+.settings-btn {
+    background: linear-gradient(135deg, #ab47bc, #8e24aa);
+}
+
+.control-btn:hover {
     transform: scale(1.1);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
 }
 
-.floating-btn.pause-btn {
-    background: #ff6b6b;
-    color: white;
-}
-
-.floating-btn.pause-btn:hover {
-    background: #ff5252;
-    transform: scale(1.1);
-}
-
-.floating-btn:active {
+.control-btn:active {
     transform: scale(0.95);
 }
 
-.floating-btn.active {
-    box-shadow: 0 4px 20px rgba(76, 175, 80, 0.5);
+.control-btn.active {
+    box-shadow: 0 0 20px rgba(76, 175, 80, 0.6);
+}
+
+.page-display {
+    color: #ccc;
+    font-size: 12px;
+    font-weight: 500;
+    min-width: 30px;
+    text-align: center;
+    padding: 0 8px;
 }
 
 /* Training Buttons */
