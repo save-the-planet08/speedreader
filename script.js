@@ -17,7 +17,8 @@ class SpeedReader {
             chunkSize: 4, // words per chunk
             pointSpeed: 0.3, // point speed multiplier (much slower default)
             startPosition: 0, // start position percentage
-            endPosition: 100 // end position percentage
+            endPosition: 100, // end position percentage
+            patternStretch: 1.0 // pattern stretch/compression multiplier
         };
 
         // Visual elements for advanced patterns
@@ -77,6 +78,10 @@ class SpeedReader {
         // Training modules
         document.getElementById('eyeTrainingBtn').addEventListener('click', () => this.eyeTraining.show());
         document.getElementById('schulteBtn').addEventListener('click', () => this.schulteTraining.show());
+
+        // Floating controls
+        document.getElementById('floatingStartBtn').addEventListener('click', () => this.start());
+        document.getElementById('floatingPauseBtn').addEventListener('click', () => this.pause());
     }
 
     initializeSettingsControls() {
@@ -125,6 +130,16 @@ class SpeedReader {
             }
 
             this.updateProgressIndicator();
+            this.generatePath();
+        });
+
+        // Pattern stretch control
+        const patternStretchSlider = document.getElementById('patternStretchSlider');
+        const patternStretchValue = document.getElementById('patternStretchValue');
+
+        patternStretchSlider.addEventListener('input', (e) => {
+            this.settings.patternStretch = parseFloat(e.target.value);
+            patternStretchValue.textContent = this.settings.patternStretch.toFixed(1);
             this.generatePath();
         });
 
@@ -244,10 +259,10 @@ class SpeedReader {
         const page = await this.pdfDoc.getPage(pageNum);
         const viewport = page.getViewport({ scale: 1 });
 
-        // Calculate scale to fit the screen
+        // Calculate scale to fill the entire screen with high resolution
         const scaleX = window.innerWidth / viewport.width;
         const scaleY = window.innerHeight / viewport.height;
-        const scale = Math.min(scaleX, scaleY) * 0.9;
+        const scale = Math.max(scaleX, scaleY) * 2.5; // Much higher resolution + fill screen
 
         const scaledViewport = page.getViewport({ scale });
 
@@ -421,6 +436,8 @@ class SpeedReader {
         // Update button states
         document.getElementById('startBtn').classList.add('active');
         document.getElementById('pauseBtn').classList.remove('active');
+        document.getElementById('floatingStartBtn').classList.add('active');
+        document.getElementById('floatingPauseBtn').classList.remove('active');
     }
 
     pause() {
@@ -432,6 +449,8 @@ class SpeedReader {
         // Update button states
         document.getElementById('startBtn').classList.remove('active');
         document.getElementById('pauseBtn').classList.add('active');
+        document.getElementById('floatingStartBtn').classList.remove('active');
+        document.getElementById('floatingPauseBtn').classList.add('active');
     }
 
     reset() {
@@ -442,6 +461,8 @@ class SpeedReader {
         // Update button states
         document.getElementById('startBtn').classList.remove('active');
         document.getElementById('pauseBtn').classList.remove('active');
+        document.getElementById('floatingStartBtn').classList.remove('active');
+        document.getElementById('floatingPauseBtn').classList.remove('active');
     }
 
     animate() {
@@ -480,20 +501,8 @@ class SpeedReader {
         this.clearFixationPoints();
 
         switch (this.settings.pattern) {
-            case 'scurve':
-                this.showSCurveEffect(point);
-                break;
-            case 'serpentine':
-                this.showSerpentineEffect(point);
-                break;
             case 'horizontalscan':
                 this.showHorizontalScanEffect(point);
-                break;
-            case 'diagonalzigzag':
-                this.showDiagonalZigzagEffect(point);
-                break;
-            case 'multicolumn':
-                this.showMultiColumnEffect(point);
                 break;
             case 'chunking':
                 this.showChunkHighlight(point);
@@ -510,6 +519,7 @@ class SpeedReader {
             case 'schulte':
                 this.showSchulteEffect(point);
                 break;
+            // No extra effects for book patterns and others - keep clean
         }
     }
 
@@ -1000,7 +1010,7 @@ class SpeedReader {
 
     // Pattern 1: Horizontale S-Kurven (links oben im Buch)
     generateBookPattern1(startX, startY, endX, endY) {
-        const lineSpacing = 35;
+        const lineSpacing = 35 * this.settings.patternStretch;
         const pointsPerLine = 80;
 
         for (let y = startY; y <= endY; y += lineSpacing) {
@@ -1008,8 +1018,8 @@ class SpeedReader {
                 const progress = i / pointsPerLine;
                 const x = startX + (endX - startX) * progress;
 
-                // Exakte horizontale S-Kurve wie im Buch
-                const sCurve = Math.sin(progress * Math.PI * 4) * 25;
+                // Exakte horizontale S-Kurve wie im Buch - Amplitude streckbar
+                const sCurve = Math.sin(progress * Math.PI * 4) * (25 * this.settings.patternStretch);
 
                 this.pathPoints.push({
                     x: x,
@@ -1031,8 +1041,8 @@ class SpeedReader {
             const verticalProgress = i / totalPoints;
             const y = startY + height * verticalProgress;
 
-            // Vertikale Schlangenbewegung wie im Buch
-            const waveX = Math.sin(verticalProgress * Math.PI * 8) * (width * 0.4);
+            // Vertikale Schlangenbewegung wie im Buch - Amplitude streckbar
+            const waveX = Math.sin(verticalProgress * Math.PI * 8) * (width * 0.4 * this.settings.patternStretch);
             const x = startX + width * 0.5 + waveX;
 
             this.pathPoints.push({
@@ -1047,14 +1057,15 @@ class SpeedReader {
     // Pattern 3: Spalten-Lesen (mitte im Buch)
     generateBookPattern3(startX, startY, endX, endY) {
         const columns = 1;
-        const lineHeight = 30;
+        const lineHeight = 30 * this.settings.patternStretch;
         const pointsPerLine = 3; // Nur 3 Fixationspunkte pro Zeile
 
         for (let y = startY; y <= endY; y += lineHeight) {
-            // Links, Mitte, Rechts - klassisches 3-Punkt-Lesen
-            const leftX = startX + (endX - startX) * 0.25;
+            // Links, Mitte, Rechts - klassisches 3-Punkt-Lesen mit Streckung
+            const spread = 0.25 * this.settings.patternStretch;
+            const leftX = startX + (endX - startX) * Math.max(0.05, 0.25 - spread);
             const centerX = startX + (endX - startX) * 0.5;
-            const rightX = startX + (endX - startX) * 0.75;
+            const rightX = startX + (endX - startX) * Math.min(0.95, 0.75 + spread);
 
             this.pathPoints.push(
                 { x: leftX, y, isBookPattern: true, pattern: 3 },
@@ -1066,7 +1077,7 @@ class SpeedReader {
 
     // Pattern 4: Figure-8 Schleifen (rechts oben im Buch)
     generateBookPattern4(startX, startY, endX, endY) {
-        const loopHeight = 60;
+        const loopHeight = 60 * this.settings.patternStretch;
         const loopsPerPage = Math.floor((endY - startY) / loopHeight);
         const pointsPerLoop = 50;
 
@@ -1077,8 +1088,8 @@ class SpeedReader {
             for (let i = 0; i <= pointsPerLoop; i++) {
                 const t = (i / pointsPerLoop) * Math.PI * 4; // Zwei komplette Kreise für Figure-8
 
-                // Figure-8 Formel (Lemniskate)
-                const scale = (endX - startX) * 0.3;
+                // Figure-8 Formel (Lemniskate) - Größe streckbar
+                const scale = (endX - startX) * 0.3 * this.settings.patternStretch;
                 const x = loopCenterX + scale * Math.cos(t) / (1 + Math.sin(t) * Math.sin(t));
                 const y = loopCenterY + (loopHeight * 0.3) * Math.sin(t) * Math.cos(t) / (1 + Math.sin(t) * Math.sin(t));
 
@@ -1094,7 +1105,7 @@ class SpeedReader {
 
     // Pattern 5: Horizontale Scan-Linien (rechts unten im Buch)
     generateBookPattern5(startX, startY, endX, endY) {
-        const scanLines = 12;
+        const scanLines = Math.floor(12 / this.settings.patternStretch);
         const scanSpacing = (endY - startY) / scanLines;
         const pointsPerScan = 60;
 
@@ -1132,8 +1143,8 @@ class SpeedReader {
             const baseX = startX + width * progress;
             const baseY = startY + height * progress;
 
-            // Zickzack-Wellen überlagert
-            const waveAmplitude = 40;
+            // Zickzack-Wellen überlagert - Amplitude streckbar
+            const waveAmplitude = 40 * this.settings.patternStretch;
             const waveFreq = 15;
             const zigzagX = Math.sin(progress * Math.PI * waveFreq) * waveAmplitude;
             const zigzagY = Math.cos(progress * Math.PI * waveFreq * 0.7) * (waveAmplitude * 0.5);
