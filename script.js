@@ -71,9 +71,7 @@ class SpeedReader {
         document.getElementById('pauseBtn').addEventListener('click', () => this.pause());
         document.getElementById('resetBtn').addEventListener('click', () => this.reset());
 
-        // Page navigation
-        document.getElementById('prevPageBtn').addEventListener('click', () => this.previousPage());
-        document.getElementById('nextPageBtn').addEventListener('click', () => this.nextPage());
+        // Page navigation handled in setupSimpleControls()
 
         // Training modules
         document.getElementById('eyeTrainingBtn').addEventListener('click', () => this.eyeTraining.show());
@@ -246,7 +244,6 @@ class SpeedReader {
             document.getElementById('pageNavigation').classList.add('visible');
 
             this.updatePageInfo();
-            this.updateSimpleControlPageDisplay();
             this.updateProgressIndicator();
             this.generatePath();
         } catch (error) {
@@ -761,7 +758,6 @@ class SpeedReader {
         this.currentPage--;
         await this.renderPage(this.currentPage);
         this.updatePageInfo();
-        this.updateSimpleControlPageDisplay();
         this.generatePath();
     }
 
@@ -772,7 +768,6 @@ class SpeedReader {
         this.currentPage++;
         await this.renderPage(this.currentPage);
         this.updatePageInfo();
-        this.updateSimpleControlPageDisplay();
         this.generatePath();
     }
 
@@ -811,12 +806,6 @@ class SpeedReader {
         }
     }
 
-    updateSimpleControlPageDisplay() {
-        const pageInfo = document.getElementById('pageInfo');
-        if (pageInfo && this.pdfDoc) {
-            pageInfo.textContent = `${this.currentPage}/${this.pdfDoc.numPages}`;
-        }
-    }
 
     updateProgressIndicator() {
         const progressFill = document.getElementById('progressIndicator');

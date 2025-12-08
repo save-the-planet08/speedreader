@@ -263,52 +263,39 @@ body {
 /* Simple Controls */
 .simple-controls {
     position: fixed;
-    bottom: 30px;
-    right: 30px;
+    bottom: 20px;
+    right: 20px;
     display: flex;
     align-items: center;
-    gap: 15px;
+    gap: 8px;
     z-index: 1000;
 }
 
 .simple-btn {
-    width: 50px;
-    height: 50px;
+    width: 35px;
+    height: 35px;
     border-radius: 50%;
-    border: 2px solid #fff;
+    border: 1px solid #fff;
     background: #000;
     color: #fff;
-    font-size: 18px;
+    font-size: 14px;
     cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    transition: all 0.2s ease;
+    box-shadow: none;
 }
 
 .simple-btn:hover {
     background: #fff;
     color: #000;
-    transform: scale(1.05);
 }
 
 .simple-btn:active {
-    transform: scale(0.95);
+    transform: scale(0.9);
 }
 
 .simple-btn.active {
     background: #fff;
     color: #000;
-}
-
-.page-info {
-    color: #fff;
-    font-size: 14px;
-    font-weight: 500;
-    padding: 8px 12px;
-    background: rgba(0, 0, 0, 0.8);
-    border-radius: 20px;
-    border: 1px solid #fff;
-    min-width: 50px;
-    text-align: center;
 }
 
 /* Training Buttons */
