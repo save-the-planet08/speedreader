@@ -127,8 +127,19 @@
         <!-- PDF Upload Area -->
         <div id="uploadArea" class="upload-area">
             <input type="file" id="pdfInput" accept=".pdf" style="display: none;">
+            <input type="file" id="cameraInput" accept="image/*" capture="camera" style="display: none;">
             <div id="uploadPrompt" class="upload-prompt">
-                <p>PDF hier ablegen oder klicken zum Auswählen</p>
+                <div class="upload-options">
+                    <div class="upload-option" id="pdfOption">
+                        <p>📄 PDF hochladen</p>
+                        <small>Bestehende PDF-Datei auswählen</small>
+                    </div>
+                    <div class="upload-divider">oder</div>
+                    <div class="upload-option" id="scanOption">
+                        <p>📱 Dokument scannen</p>
+                        <small>Dokument mit Kamera erfassen</small>
+                    </div>
+                </div>
             </div>
         </div>
 

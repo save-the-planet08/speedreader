@@ -198,9 +198,27 @@ class SpeedReader {
     initializePDFUpload() {
         const uploadArea = document.getElementById('uploadArea');
         const pdfInput = document.getElementById('pdfInput');
+        const cameraInput = document.getElementById('cameraInput');
+        const pdfOption = document.getElementById('pdfOption');
+        const scanOption = document.getElementById('scanOption');
 
-        uploadArea.addEventListener('click', () => {
+        // PDF upload option
+        pdfOption.addEventListener('click', (e) => {
+            e.stopPropagation();
             pdfInput.click();
+        });
+
+        // Camera scan option
+        scanOption.addEventListener('click', (e) => {
+            e.stopPropagation();
+            cameraInput.click();
+        });
+
+        // Keep original click behavior for general area clicks
+        uploadArea.addEventListener('click', (e) => {
+            if (!e.target.closest('.upload-option')) {
+                pdfInput.click();
+            }
         });
 
         uploadArea.addEventListener('dragover', (e) => {
@@ -229,6 +247,52 @@ class SpeedReader {
                 this.loadPDF(file);
             }
         });
+
+        cameraInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file && file.type.startsWith('image/')) {
+                this.loadImage(file);
+            }
+        });
+    }
+
+    async loadImage(file) {
+        try {
+            const img = new Image();
+            const canvas = this.canvas;
+            const ctx = this.ctx;
+
+            img.onload = () => {
+                // Calculate scale to fit image in canvas
+                const scaleX = canvas.width / img.width;
+                const scaleY = canvas.height / img.height;
+                const scale = Math.max(scaleX, scaleY) * 2.5;
+
+                canvas.width = img.width * scale;
+                canvas.height = img.height * scale;
+
+                // Draw image to canvas
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.drawImage(img, 0, 0, img.width * scale, img.height * scale);
+
+                // Hide upload area and show viewer
+                document.getElementById('uploadArea').classList.add('hidden');
+                document.getElementById('pdfViewer').classList.add('visible');
+
+                // Set mock PDF properties for compatibility
+                this.pdfDoc = { numPages: 1 };
+                this.currentPage = 1;
+
+                this.updatePageInfo();
+                this.updateProgressIndicator();
+                this.generatePath();
+            };
+
+            img.src = URL.createObjectURL(file);
+        } catch (error) {
+            console.error('Error loading image:', error);
+            alert('Fehler beim Laden des Bildes');
+        }
     }
 
     async loadPDF(file) {
